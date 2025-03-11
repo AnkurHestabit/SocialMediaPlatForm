@@ -8,7 +8,6 @@ const passport = require("passport");
 const responseMiddleware = require('./utils/responses')
 app.use(responseMiddleware);
 // Middleware setup
-const cors = require("cors");
 
 app.use(cors({
     origin: "https://frontend-3ik9enmmd-ankurs-projects-33779db2.vercel.app",  // Allow frontend
@@ -23,8 +22,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 const authRoutes = require("./routes/auth.route");
- app.use("/api/v1/auth", authRoutes);
-
+app.use("/api/v1/auth", authRoutes);
 app.use('/api/v1/user',require('./routes/user.route'))
 app.use('/api/v1/post',require('./routes/post.route'))
 app.use('/api/v1/comment',require('./routes/comment.route'))
