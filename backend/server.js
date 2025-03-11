@@ -8,10 +8,11 @@ const port = process.env.PORT || 5000;
 
 const io = new Server(server, {
     cors: {
-        origin: "https://socialmediaplatform-dmhm.onrender.com/", // Adjust for frontend
+        origin: "https://frontend-3ik9enmmd-ankurs-projects-33779db2.vercel.app", // Use your frontend URL
         methods: ["GET", "POST"]
     }
 });
+
 
 app.set("io", io); // ✅ Store io instance in app
 

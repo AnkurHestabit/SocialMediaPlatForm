@@ -8,7 +8,13 @@ const passport = require("passport");
 const responseMiddleware = require('./utils/responses')
 app.use(responseMiddleware);
 // Middleware setup
-app.use(cors());  // Allow cross-origin requests
+const cors = require("cors");
+
+app.use(cors({
+    origin: "https://frontend-3ik9enmmd-ankurs-projects-33779db2.vercel.app",  // Allow frontend
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true  // Allow cookies & auth headers
+}));
 app.use(express.json());  // Parse incoming requests with JSON payloads
 
 connectDB()
