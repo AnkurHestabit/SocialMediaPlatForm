@@ -21,7 +21,7 @@ const AuthSuccess = () => {
     
     const fetchUser = async (token) => {
         try {
-            const res = await fetch("http://localhost:5000/api/v1/auth/me", {
+            const res = await fetch("https://socialmediaplatform-dmhm.onrender.com/api/v1/auth/me", {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const data = await res.json();

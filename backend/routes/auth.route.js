@@ -13,7 +13,7 @@ router.get("/google/callback",
     passport.authenticate("google", { session: false }), 
     (req, res) => {
         const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
-        res.redirect(`http://localhost:3000/auth-success?token=${token}`);
+        res.redirect(`https://socialmediaplatform-dmhm.onrender.com/auth-success?token=${token}`);
     }
 );
 
@@ -27,7 +27,7 @@ router.get("/facebook/callback",
         await User.findByIdAndUpdate(req.user._id ,{
             token:token
         })
-        res.redirect(`http://localhost:3000/auth-success?token=${token}`);
+        res.redirect(`https://socialmediaplatform-dmhm.onrender.com/auth-success?token=${token}`);
     }
 );
 
