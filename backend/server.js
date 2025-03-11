@@ -8,7 +8,7 @@ const port = process.env.PORT || 5000;
 
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:3000", // Adjust for frontend
+        origin: "https://socialmediaplatform-dmhm.onrender.com/", // Adjust for frontend
         methods: ["GET", "POST"]
     }
 });
