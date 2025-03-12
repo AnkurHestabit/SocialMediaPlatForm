@@ -1,9 +1,9 @@
 const express = require("express");
-const https = require("https");
+const http = require("http");
 const { Server } = require("socket.io");
 
 const app = require('./app')
-const server = https.createServer(app);
+const server = http.createServer(app);
 const port = process.env.PORT || 5000;
 
 const io = new Server(server, {
@@ -24,12 +24,12 @@ io.on("connection", (socket) => {
 
     // Handle user connection
   // Handle user connection
-  socket.on("userConnected", (user) => {
+      socket.on("userConnected", (user) => {
     if (user?.id) {
         onlineUsers[socket.id] = { id: user.id, name: user.name };
         io.emit("updateOnlineUsers", Object.values(onlineUsers)); // Send updated list to all users
     }
-    });
+});
 
 
      // ✅ Handle user coming online
