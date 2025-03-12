@@ -30,7 +30,8 @@ const Login = () => {
     
 
     const handleFacebookLogin = () => {
-        window.location.href = "https://socialmediaplatform-dmhm.onrender.com/api/v1/auth/facebook";
+     window.location.href = "https://socialmediaplatform-dmhm.onrender.com/api/v1/auth/facebook";
+       
     };
 
     return (
@@ -42,36 +43,39 @@ const Login = () => {
                 {error && <p className="text-red-500 text-sm text-center mb-4">{error}</p>}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                        <label className="block text-gray-700 font-medium">Email</label>
-                        <input
-                            type="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-gray-700 font-medium">Password</label>
-                        <input
-                            type="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
-                            required
-                        />
-                    </div>
-                    <button
-                        type="submit"
-                        className="w-full bg-blue-500 text-white py-2 rounded-lg font-semibold hover:bg-blue-600 transition duration-200"
-                        disabled={loading}
-                    >
-                        {loading ? "Logging in..." : "Login"}
-                    </button>
-                </form>
+               <div>
+        <label htmlFor="email" className="block text-gray-700 font-medium">Email</label>
+        <input
+            type="email"
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
+            required
+        />
+    </div>
+    <div>
+        <label htmlFor="password" className="block text-gray-700 font-medium">Password</label>
+        <input
+            type="password"
+            id="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-400"
+            required
+        />
+    </div>
+    <button
+        type="submit"
+        className="w-full bg-blue-500 text-white py-2 rounded-lg font-semibold hover:bg-blue-600 transition duration-200"
+        disabled={loading}
+    >
+        {loading ? "Logging in..." : "Login"}
+    </button>
+</form>
+
 
                 {/* ✅ Google & Facebook Login Buttons */}
                 <div className="mt-4 space-y-2">

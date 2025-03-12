@@ -1,14 +1,15 @@
 const express = require("express");
-const http = require("http");
+const https = require("https");
 const { Server } = require("socket.io");
 
 const app = require('./app')
-const server = http.createServer(app);
+const server = https.createServer(app);
 const port = process.env.PORT || 5000;
 
 const io = new Server(server, {
     cors: {
         origin: "https://frontend-3ik9enmmd-ankurs-projects-33779db2.vercel.app", // Use your frontend URL
+        rigin: "https://frontend-3ik9enmmd-ankurs-projects-33779db2.vercel.app", // Use your frontend URL
         methods: ["GET", "POST"]
     }
 });
@@ -23,12 +24,14 @@ io.on("connection", (socket) => {
     console.log("A user connected:", socket.id);
 
     // Handle user connection
-    socket.on("userConnected", (user) => {
-        if (user && user.id) {
-            onlineUsers[socket.id] = { id: user.id, name: user.name };
-            io.emit("updateOnlineUsers", Object.values(onlineUsers)); // Send updated list to all users
-        }
+  // Handle user connection
+  socket.on("userConnected", (user) => {
+    if (user?.id) {
+        onlineUsers[socket.id] = { id: user.id, name: user.name };
+        io.emit("updateOnlineUsers", Object.values(onlineUsers)); // Send updated list to all users
+    }
     });
+
 
      // ✅ Handle user coming online
      socket.on("userOnline", ({ userId, username }) => {
