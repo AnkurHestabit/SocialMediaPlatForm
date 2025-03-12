@@ -149,7 +149,7 @@ const PostList = () => {
                 <div key={post._id} className="bg-white rounded-lg shadow-md border border-gray-300 mb-6">
                     <div className="p-4 flex items-center justify-between">
                         <h3 className="text-md font-semibold">{post.user?.name || storedUser.name ||"Anonymous"}</h3>
-                        {post.user?._id === userId && (
+                        {post.user=== userId && (
                             <div className="flex space-x-2">
                                 <button
                                     onClick={() => handleEditPost(post)}
