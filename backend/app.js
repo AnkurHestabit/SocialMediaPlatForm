@@ -10,7 +10,7 @@ app.use(responseMiddleware);
 // Middleware setup
 
 app.use(cors({
-    origin: "https://frontend-3ik9enmmd-ankurs-projects-33779db2.vercel.app",  // Allow frontend
+    origin: "https://frontend-rf44etbq3-ankurs-projects-33779db2.vercel.app",  // Allow frontend
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true  // Allow cookies & auth headers
 }));
