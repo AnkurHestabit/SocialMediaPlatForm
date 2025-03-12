@@ -36,6 +36,7 @@ const CommentForm = ({ postId }) => {
             try {
                 const newComment = { postId, text: trimmedComment, userId };
                 dispatch(addComment(newComment));
+                socket.emit("newComment", { postId, comment: newComment }); 
                 setCommentText(""); // ✅ Clear input after submission
                 toast.success(`💬 ${storedUser.name} commented: "${trimmedComment}"`)
         

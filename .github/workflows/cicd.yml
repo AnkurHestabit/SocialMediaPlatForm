@@ -20,19 +20,15 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install dependencies
+      - name: Install dependencies (excluding test folder)
         run: |
-          cd backend
-          npm install
-          cd ../frontend
-          npm install
+          if [ -d "backend" ]; then cd backend && npm install && cd ..; fi
+          if [ -d "frontend" ]; then cd frontend && npm install && cd ..; fi
 
-      - name: Run tests
+      - name: Run tests (excluding test folder)
         run: |
-          cd backend
-          npm test
-          cd ../frontend
-          npm test
+          if [ -d "backend" ]; then cd backend && npm test && cd ..; fi
+          if [ -d "frontend" ]; then cd frontend && npm test && cd ..; fi
 
   deploy:
     needs: build
