@@ -197,17 +197,21 @@ class UserController {
             const { refreshToken } = req.cookies;
     
             // ✅ Clear both access and refresh token cookies correctly
-            res.clearCookie("accessToken", {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "Strict",
-            });
-    
-            res.clearCookie("refreshToken", {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "Strict",
-            });
+        res.clearCookie("accessToken", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "None",  // ✅ Needed for cross-origin logout
+            domain: ".socialmediaplatform-dmhm.onrender.com",  // ✅ Replace with your actual domain
+            path: "/",  // ✅ Clear cookie site-wide
+        });
+
+        res.clearCookie("refreshToken", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "None",  // ✅ Needed for cross-origin logout
+            domain: ".socialmediaplatform-dmhm.onrender.com",  // ✅ Replace with your actual domain
+            path: "/",  // ✅ Clear cookie site-wide
+        });
     
             // ✅ Remove refresh token from database
             if (refreshToken) {
