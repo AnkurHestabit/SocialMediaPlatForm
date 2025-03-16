@@ -33,7 +33,7 @@ const Login = () => {
     };
 
     const handleFacebookLogin = () => {
-        window.location.href = "http://localhost:5000/api/v1/auth/facebook";
+        window.location.href = "https://socialmediaplatform-dmhm.onrender.com/api/v1/auth/facebook";
     };
 
     return (

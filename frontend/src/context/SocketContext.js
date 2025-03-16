@@ -7,7 +7,7 @@ export const SocketProvider = ({ children }) => {
     const [socket, setSocket] = useState(null);
 
     useEffect(() => {
-        const newSocket = io("http://localhost:5000"); // Your backend URL
+        const newSocket = io("hhttps://socialmediaplatform-dmhm.onrender.com"); // Your backend URL
         setSocket(newSocket);
 
         return () => {
