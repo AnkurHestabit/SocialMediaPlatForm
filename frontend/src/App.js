@@ -19,22 +19,32 @@ const App = () => {
     const [checkingAuth, setCheckingAuth] = useState(true); // ✅ Prevent flash before fetching user
 
     useEffect(() => {
+        let isMounted = true; // ✅ Prevents unnecessary state updates on unmounted component
+    
         const fetchData = async () => {
-            await dispatch(fetchUser());
-            setCheckingAuth(false);
+            if (isMounted) {
+                await dispatch(fetchUser()); // ✅ Only fetch user once
+                setCheckingAuth(false);
+            }
         };
     
-        fetchData(); // ✅ Always fetch user, even after login
+        fetchData(); // ✅ Fetch user only once on mount
     
         const handleStorageChange = (event) => {
             if (event.key === "auth/logout") {
-                dispatch(fetchUser()); // 🔄 Check session status after logout
+                // ✅ Check if user is already logged out before refetching
+                if (!user) return;
+                dispatch(fetchUser());
             }
         };
     
         window.addEventListener("storage", handleStorageChange);
-        return () => window.removeEventListener("storage", handleStorageChange);
-    }, [dispatch]); // ✅ Removed `user` from dependencies
+    
+        return () => {
+            isMounted = false; // ✅ Cleanup on unmount
+            window.removeEventListener("storage", handleStorageChange);
+        };
+    }, [dispatch]); // ✅ Removed `user` from dependencies (prevents infinite loop)
     
     
 
