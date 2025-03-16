@@ -75,7 +75,6 @@ class UserController {
     }
 
     
-   
     async loginUser(req, res) {
         try {
             const { email, password } = req.body;
@@ -113,20 +112,23 @@ class UserController {
             user.refreshToken = refreshToken;
             await user.save();
     
-            // ✅ Set HTTP-Only Cookies for both tokens
             res.cookie("accessToken", accessToken, {
-                httpOnly: true, // Secure against XSS
-                secure: process.env.NODE_ENV === "production", // Use HTTPS in production
-                sameSite: "Strict", // Prevent CSRF
+                httpOnly: true, // ✅ Prevents XSS attacks
+                secure: process.env.NODE_ENV === "production", // ✅ Required for HTTPS
+                sameSite: "None", // ✅ Required for cross-site cookies
+                domain: "https://socialmediaplatform-dmhm.onrender.com", // ✅ Use your actual domain
+                path: "/", // ✅ Ensure it's available across routes
                 maxAge: 15 * 60 * 1000, // 15 minutes
             });
-    
             res.cookie("refreshToken", refreshToken, {
-                httpOnly: true, // Secure against XSS
-                secure: process.env.NODE_ENV === "production", // Use HTTPS in production
-                sameSite: "Strict", // Prevent CSRF
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "None",
+                domain: "https://socialmediaplatform-dmhm.onrender.com",
+                path: "/",
                 maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
             });
+            
     
             // ✅ Send user data (without sensitive information)
             const userData = {
@@ -172,13 +174,16 @@ class UserController {
                 { expiresIn: "15m" } // Short expiry for security
             );
     
-            // ✅ Set the new access token in an HTTP-only cookie
             res.cookie("accessToken", accessToken, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "Strict",
+                httpOnly: true, // ✅ Prevents XSS attacks
+                secure: process.env.NODE_ENV === "production", // ✅ Required for HTTPS
+                sameSite: "None", // ✅ Required for cross-site cookies
+                domain: "https://socialmediaplatform-dmhm.onrender.com", // ✅ Use your actual domain
+                path: "/", // ✅ Ensure it's available across routes
                 maxAge: 15 * 60 * 1000, // 15 minutes
             });
+           
+            
     
             // ✅ Send the new access token
             res.apiResponse({ data: { accessToken }, message: "Token refreshed", status: 200 });
