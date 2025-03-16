@@ -116,7 +116,7 @@ class UserController {
                 httpOnly: true, // ✅ Prevents XSS attacks
                 secure: process.env.NODE_ENV === "production", // ✅ Required for HTTPS
                 sameSite: "None", // ✅ Required for cross-site cookies
-                domain: "https://socialmediaplatform-dmhm.onrender.com", // ✅ Use your actual domain
+                domain: ".socialmediaplatform-dmhm.onrender.com", // ✅ Use your actual domain
                 path: "/", // ✅ Ensure it's available across routes
                 maxAge: 15 * 60 * 1000, // 15 minutes
             });
@@ -124,7 +124,7 @@ class UserController {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
                 sameSite: "None",
-                domain: "https://socialmediaplatform-dmhm.onrender.com",
+                domain: ".socialmediaplatform-dmhm.onrender.com",
                 path: "/",
                 maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
             });
@@ -178,7 +178,7 @@ class UserController {
                 httpOnly: true, // ✅ Prevents XSS attacks
                 secure: process.env.NODE_ENV === "production", // ✅ Required for HTTPS
                 sameSite: "None", // ✅ Required for cross-site cookies
-                domain: "https://socialmediaplatform-dmhm.onrender.com", // ✅ Use your actual domain
+                domain: ".socialmediaplatform-dmhm.onrender.com", // ✅ Use your actual domain
                 path: "/", // ✅ Ensure it's available across routes
                 maxAge: 15 * 60 * 1000, // 15 minutes
             });
