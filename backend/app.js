@@ -11,10 +11,10 @@ app.use(responseMiddleware);
 // Middleware setup
 
 app.use(cors({
-    origin: "https://frontend-l2bxyzbw9-ankurs-projects-33779db2.vercel.app",
+    origin: "https://frontend-1mw0yatv9-ankurs-projects-33779db2.vercel.app",
     methods: ["GET", "POST", "PUT", "DELETE","PATCH"],
     credentials: true  // Allow cookies & auth headers
-}));
+}))
 app.use(express.json());  // Parse incoming requests with JSON payloads
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser()); // ✅ This enables req.cookies
