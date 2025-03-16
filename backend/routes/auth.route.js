@@ -27,7 +27,8 @@ router.get("/facebook/callback",
         await User.findByIdAndUpdate(req.user._id ,{
             token:token
         })
-        res.redirect(`https://socialmediaplatform-dmhm.onrender.com/auth-success?token=${token}`);
+        // res.redirect(`https://socialmediaplatform-dmhm.onrender.com/auth-success?token=${token}`);
+        res.redirect(`http://localhost:3000/auth-success?token=${token}`);
     }
 );
 

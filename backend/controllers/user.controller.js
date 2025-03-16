@@ -24,7 +24,7 @@ class UserController {
     async getUsers(req, res) {
         try {
             const{userId} = req.params
-            const users = await User.findBYId(userId);
+            const users = await User.findById(userId);
             res.apiResponse({ data: users, message: "Users fetched successfully", status: 200 });
         } catch (error) {
             res.apiResponse({ status: 500, message: "Failed to fetch users", error: error.message });
@@ -75,35 +75,157 @@ class UserController {
     }
 
     
-
+   
     async loginUser(req, res) {
         try {
-            const user = await User.findOne({ email: req.body.email });
-
+            const { email, password } = req.body;
+    
+            // ✅ Find user by email
+            const user = await User.findOne({ email });
+    
             if (!user) {
                 return res.apiResponse({ status: 400, message: "Invalid credentials" });
             }
-
-            const isMatch = await bcrypt.compare(req.body.password, user.password);
-
+    
+            // ✅ Compare passwords
+            const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch) {
                 return res.apiResponse({ status: 400, message: "Invalid credentials" });
             }
+    
+            // ✅ Generate Access Token (short-lived, e.g., 15 minutes)
+            const accessToken = jwt.sign(
+                { id: user._id },
+                process.env.JWT_SECRET,
+                { expiresIn: "15m" } // Short expiry for security
+            );
+    
+            // ✅ Generate Refresh Token (long-lived, e.g., 7 days)
+            const refreshToken = jwt.sign(
+                { id: user._id },
+                process.env.REFRESH_TOKEN_SECRET,
+                { expiresIn: "7d" } // Long expiry for refreshing access
+            );
+    
 
-            // Generate JWT Token
-            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
-            await User.findByIdAndUpdate(user._id,{
-                token:token
-            })
-
-            res.apiResponse({ data: { token, user }, message: "Login successful", status: 200 });
+            user.token = accessToken
+            // ✅ Save refresh token in the database
+            user.refreshToken = refreshToken;
+            await user.save();
+    
+            // ✅ Set HTTP-Only Cookies for both tokens
+            res.cookie("accessToken", accessToken, {
+                httpOnly: true, // Secure against XSS
+                secure: process.env.NODE_ENV === "production", // Use HTTPS in production
+                sameSite: "Strict", // Prevent CSRF
+                maxAge: 15 * 60 * 1000, // 15 minutes
+            });
+    
+            res.cookie("refreshToken", refreshToken, {
+                httpOnly: true, // Secure against XSS
+                secure: process.env.NODE_ENV === "production", // Use HTTPS in production
+                sameSite: "Strict", // Prevent CSRF
+                maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+            });
+    
+            // ✅ Send user data (without sensitive information)
+            const userData = {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+            };
+    
+            res.apiResponse({
+                data: { user: userData, accessToken, refreshToken },
+                message: "Login successful",
+                status: 200,
+            });
         } catch (error) {
             res.apiResponse({ status: 500, message: "Login failed", error: error.message });
         }
     }
 
+
+    async  refreshToken(req, res) {
+        try {
+            const { refreshToken } = req.cookies;
+    
+            if (!refreshToken) {
+                return res.apiResponse({ status: 401, message: "Refresh token is required" });
+            }
+    
+            // ✅ Verify the refresh token
+            const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    
+            // ✅ Find the user and validate the refresh token
+            const user = await User.findOne({ _id: decoded.id, refreshToken });
+    
+            if (!user) {
+                return res.apiResponse({ status: 403, message: "Invalid refresh token" });
+            }
+    
+            // ✅ Generate a new access token
+            const accessToken = jwt.sign(
+                { id: user._id },
+                process.env.JWT_SECRET,
+                { expiresIn: "15m" } // Short expiry for security
+            );
+    
+            // ✅ Set the new access token in an HTTP-only cookie
+            res.cookie("accessToken", accessToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "Strict",
+                maxAge: 15 * 60 * 1000, // 15 minutes
+            });
+    
+            // ✅ Send the new access token
+            res.apiResponse({ data: { accessToken }, message: "Token refreshed", status: 200 });
+        } catch (error) {
+            res.apiResponse({ status: 403, message: "Invalid refresh token", error: error.message });
+        }
+    }
+    
+    async logoutUser(req, res) {
+        try {
+            const { refreshToken } = req.cookies;
+    
+            // ✅ Clear both access and refresh token cookies correctly
+            res.clearCookie("accessToken", {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "Strict",
+            });
+    
+            res.clearCookie("refreshToken", {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "Strict",
+            });
+    
+            // ✅ Remove refresh token from database
+            if (refreshToken) {
+                const user = await User.findOne({ refreshToken });
+    
+                if (user) {
+                    user.refreshToken = null; // Remove token
+                    await user.save();
+                }
+            }
+    
+            // ✅ Send success response
+            res.apiResponse({ message: "Logged out successfully", status: 200 });
+        } catch (error) {
+            res.apiResponse({ status: 500, message: "Logout failed", error: error.message });
+        }
+    }
+    
+    
+
     async getUserProfile(req, res) {
         try {
+
             const user = await User.findById(req.user.id).select("-password"); // Exclude password
 
             if (!user) {

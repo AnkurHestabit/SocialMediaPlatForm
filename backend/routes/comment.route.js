@@ -6,7 +6,7 @@ const {verifyToken,authorizeRole} = require('../middlewear/authMiddlewear')
 
 
 router.post('/addComment',verifyToken,commentControllers.createComment)
-router.patch('/updateComment/:commentId',verifyToken,commentControllers.updateComments)
+router.patch('/updateComment/:commentId',authorizeRole(['user']),verifyToken,commentControllers.updateComments)
 router.get('/getComment/:postId',commentControllers.getComments)
 router.delete('/deleteComment/:commentId',verifyToken,commentControllers.deleteComments)
 

@@ -15,6 +15,7 @@
        default: "user",
      },
      token:String,
+     refreshToken:String,
    },
    { timestamps: true }
  );

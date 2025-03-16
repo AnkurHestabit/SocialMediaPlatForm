@@ -6,28 +6,81 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #f4f4f4;
+  background-color: #121212; /* Dark background for entire app */
+  color: white; /* Default text color */
 }
 
+/* Navbar */
 nav {
-  background: #333;
+  background: linear-gradient(45deg, #833ab4, #fd1d1d, #fcb045); /* Instagram-like gradient */
   color: white;
   padding: 10px;
   display: flex;
   justify-content: space-between;
 }
 
+/* Forms (Create Post, Login, Comment, etc.) */
 form {
   display: flex;
   flex-direction: column;
   max-width: 400px;
   margin: auto;
   padding: 20px;
-  background: white;
-  border-radius: 8px;
+  background: #1e1e1e; /* Dark gray form background */
+  border-radius: 10px;
+  border: 1px solid #3a3a3a; /* Subtle border */
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1); /* Soft glow effect */
 }
 
+/* Input Fields */
 input, textarea, button {
   margin: 10px 0;
+  padding: 12px;
+  border-radius: 6px;
+  border: none;
+  font-size: 16px;
+}
+
+input, textarea {
+  background: #252525; /* Darker background for inputs */
+  color: white;
+  border: 1px solid #3a3a3a;
+}
+
+/* Buttons */
+button {
+  background: linear-gradient(45deg, #ff6f61, #ff9068); /* Soft red-orange gradient */
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background: linear-gradient(45deg, #fd1d1d, #fcb045); /* Instagram colors */
+  transform: scale(1.05);
+}
+
+/* Chat Messages */
+.chat-container {
+  background: #1e1e1e; /* Dark background for chat */
+  border-radius: 10px;
+  border: 1px solid #3a3a3a;
   padding: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* Online User List */
+.online-user {
+  background: #252525;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.online-user:hover {
+  background: #3a3a3a;
 }

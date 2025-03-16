@@ -2,41 +2,126 @@
 @tailwind components;
 @tailwind utilities;
 
-.App {
-  text-align: center;
+/* Define the exact Instagram gradient */
+:root {
+  --instagram-gradient: linear-gradient(135deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5);
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
+/* Apply the gradient to the entire app */
+body, html, #root {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: var(--instagram-gradient) !important;
+  background-attachment: fixed;
+  color: white !important;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+}
+
+/* Navbar */
+nav {
+  background: var(--instagram-gradient);
+  color: white;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Forms */
+form {
+  display: flex;
+  flex-direction: column;
+  max-width: 400px;
+  margin: auto;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+/* Input Fields */
+input, textarea {
+  margin: 10px 0;
+  padding: 12px;
+  border-radius: 6px;
+  border: none;
+  font-size: 16px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+input::placeholder, textarea::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Buttons */
+button {
+  background: linear-gradient(45deg, #ff6f61, #ff9068);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+}
+
+button:hover {
+  background: linear-gradient(45deg, #fd1d1d, #fcb045);
+  transform: scale(1.05);
+}
+
+/* Post Container */
+.post-container {
+  background: rgba(0, 0, 0, 0.7);
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* Chat UI */
+.chat-container {
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* Online Users */
+.online-user {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: 0.3s;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.online-user:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Fix any white sections */
+.bg-white {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.text-black {
+  color: white !important;
+}
+
+.text-gray-700 {
+  color: rgba(255, 255, 255, 0.8) !important;
 }

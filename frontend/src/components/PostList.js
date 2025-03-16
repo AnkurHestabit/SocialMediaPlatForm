@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext, useCallback, useMemo, lazy, Suspense } from "react";
+import { useEffect, useState, useContext, useCallback, lazy, Suspense } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addPostManually, fetchComments, removePost, updatePost } from "../redux/slices/postsSlice";
 import { SocketContext } from "../context/SocketContext";
@@ -7,78 +7,49 @@ import CreatePostForm from "./PostForm";
 import CommentForm from "./CommentForm";
 import CommentList from "./CommentList";
 import { toast } from "react-toastify";
+import { Heart, MessageCircle, Trash2, Edit3, Users } from "lucide-react";
 
-const Chat = lazy(() => import("../pages/chat")); // ✅ Lazy Loading Chat
+const Chat = lazy(() => import("../pages/chat"));
 
 const PostList = () => {
     const { posts } = useSelector((state) => state.posts);
     const dispatch = useDispatch();
     const socket = useContext(SocketContext);
-    const { startChat, activeChat, setActiveChat } = useContext(ChatContext);
-    const [showCreatePost, setShowCreatePost] = useState(false);
-    const [onlineUsers, setOnlineUsers] = useState([]);
-    const [activePost, setActivePost] = useState(null);
-    const [editingPost, setEditingPost] = useState(null); // New state for editing
-    const [updatedTitle, setUpdatedTitle] = useState(""); // New state for updated title
-    const [updatedContent, setUpdatedContent] = useState(""); // New state for updated content
+    const { activeChat, setActiveChat, onlineUsers, notifications } = useContext(ChatContext);
 
-    // ✅ Store user in a variable to prevent repeated JSON parsing
-    const storedUser = useMemo(() => JSON.parse(sessionStorage.getItem("user")), []);
-    const userId = storedUser?._id;
+    const [showCreatePost, setShowCreatePost] = useState(false);
+    const [activePost, setActivePost] = useState(null);
+    const [editingPost, setEditingPost] = useState(null);
+    const [updatedTitle, setUpdatedTitle] = useState("");
+    const [updatedContent, setUpdatedContent] = useState("");
+    const [showOnlineUsers, setShowOnlineUsers] = useState(false); // To toggle online users list
+
+    const user = useSelector((state) => state.auth.user);
+    const userId = user?._id;
 
     useEffect(() => {
-        if (!socket || !storedUser) return;
-
-        socket.emit("userOnline", { userId: storedUser._id, username: storedUser.name });
-
-    
+      
+        if (!socket || !user) return;
+        socket.emit("userOnline", { userId: user._id, username: user.name });
 
         const handleNewPost = (newPost) => {
-            if (newPost.user._id !== storedUser._id) {  // ✅ Ignore own post
+            if (newPost.user._id !== user._id) {
                 dispatch(addPostManually(newPost));
-                toast.info(`${newPost.user?.name || "Someone"} posted: ${newPost.title}`, {
-                    onClick: () => window.scrollTo(0, 0), // Clicking notification scrolls to top
-                });
+                toast.info(`${newPost.user?.name || "Someone"} posted: ${newPost.title}`);
             }
-        };
-        
-        const handleOnlineUsers = (users) => {
-            setOnlineUsers(users.filter(user => user?.userId && user?.username));
-        };
-        const handleUserDisconnected = (disconnectedUserId) => {
-            setOnlineUsers((prevUsers) => prevUsers.filter(user => user.userId !== disconnectedUserId));
         };
 
         socket.on("newPost", handleNewPost);
-        socket.on("onlineUsers", handleOnlineUsers);
-        socket.on("userDisconnected", handleUserDisconnected);
+        return () => socket.off("newPost", handleNewPost);
+    }, [socket, dispatch, user]);
 
-        return () => {
-            socket.off("newPost", handleNewPost);
-            socket.off("onlineUsers", handleOnlineUsers);
-            socket.off("userDisconnected", handleUserDisconnected);
-        };
-    }, [socket, dispatch, storedUser]);
-
-    // ✅ Memoize Online Users List
-    const filteredOnlineUsers = useMemo(() => {
-        return onlineUsers.filter(user => user?.userId && user?.username);
-    }, [onlineUsers]);
-
-    // ✅ Memoized Event Handlers
     const handleDeletePost = useCallback((postId) => {
-        if (window.confirm("Are you sure you want to delete this post?")) {
+        if (window.confirm("Delete this post?")) {
             dispatch(removePost(postId));
             socket.emit("deletePost", postId);
         }
     }, [dispatch, socket]);
 
-    const handleStartChat = useCallback((user) => {
-        startChat(user);
-        setActiveChat(user);
-    }, [startChat, setActiveChat]);
-
-    // Handle editing post
     const handleEditPost = (post) => {
         setEditingPost(post);
         setUpdatedTitle(post.title);
@@ -87,151 +58,179 @@ const PostList = () => {
 
     const handleUpdatePost = (e) => {
         e.preventDefault();
-        const updatedPost = { 
-            ...editingPost, 
-            title: updatedTitle, 
-            content: updatedContent 
-        };
-      
-        dispatch(updatePost({ postId: editingPost._id, postDetails:updatedPost })); // Pass postId and updatedPost
-        socket.emit("updatePost", { postId: editingPost._id, updatedPost }); // Emit postId and updatedPost
-        setEditingPost(null); // Close the editing form
-        setUpdatedTitle(""); // Clear input
-        setUpdatedContent(""); // Clear input
+        const updatedPost = { ...editingPost, title: updatedTitle, content: updatedContent };
+        dispatch(updatePost({ postId: editingPost._id, postDetails: updatedPost }));
+        socket.emit("updatePost", { postId: editingPost._id, updatedPost });
+        setEditingPost(null);
+        setUpdatedTitle("");
+        setUpdatedContent("");
     };
-    
+
+    const toggleComments = (postId) => {
+        setActivePost((prev) => (prev === postId ? null : postId));
+        if (activePost !== postId) {
+            dispatch(fetchComments(postId));
+        }
+    };
 
     return (
-        <div className="max-w-lg mx-auto space-y-6 relative">
-            {/* ✅ Toggle Create Post Form */}
-            <button
-                onClick={() => setShowCreatePost(prev => !prev)}
-                className="bg-blue-500 text-white px-4 py-2 rounded shadow-md w-full"
-            >
-                {showCreatePost ? "Cancel" : "Create Post"}
-            </button>
+        <div className="min-h-screen bg-[#121212] text-white">
+            {/* Main Content */}
+            <main className="container mx-auto p-4 pt-20">
+                {/* Create Post Button */}
+                <div className="flex justify-end mb-6">
+                    <button
+                        onClick={() => setShowCreatePost((prev) => !prev)}
+                        className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-6 py-2 rounded-full shadow-lg hover:scale-105 transition"
+                    >
+                        {showCreatePost ? "Cancel" : "Create Post"}
+                    </button>
+                </div>
 
-            {showCreatePost && (
-                <div className="bg-white p-4 rounded-lg shadow-md border border-gray-300">
-                    <CreatePostForm onClose={() => setShowCreatePost(false)} />
+                {/* Create Post Form */}
+                {showCreatePost && (
+                    <div className="bg-gray-800 p-4 rounded-xl shadow-md border border-gray-700 mb-6">
+                        <CreatePostForm onClose={() => setShowCreatePost(false)} />
+                    </div>
+                )}
+
+                {/* Posts Section */}
+                <div className="space-y-6">
+                    {posts.map(post => (
+                        <div key={post._id} className="bg-gray-800 rounded-xl shadow-lg border border-gray-700 p-4">
+                            <div className="flex items-center space-x-3 mb-3">
+                                <img
+                                    src={post.user?.profilePic || "https://via.placeholder.com/40"}
+                                    className="w-12 h-12 rounded-full border object-cover"
+                                />
+                                <h3 className="text-md font-semibold">{post.user?.name || "Anonymous"}</h3>
+                                {post.user._id === userId && (
+                                    <div className="ml-auto flex space-x-2">
+                                        <button onClick={() => handleEditPost(post)}>
+                                            <Edit3 className="text-blue-400 w-6 h-6" />
+                                        </button>
+                                        <button onClick={() => handleDeletePost(post._id)}>
+                                            <Trash2 className="text-red-400 w-6 h-6" />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+
+                            <p className="text-gray-300 font-medium">{post.title}</p>
+                            <p className="text-gray-400 mt-1">{post.content}</p>
+
+                            <div className="flex space-x-4 mt-3">
+                                <button className="flex items-center space-x-1 text-red-400 hover:scale-110 transition">
+                                    <Heart className="w-6 h-6" /> <span>Like</span>
+                                </button>
+                                <button
+                                    className="flex items-center space-x-1 text-blue-400 hover:scale-110 transition"
+                                    onClick={() => toggleComments(post._id)}
+                                >
+                                    <MessageCircle className="w-6 h-6" /> <span>Comment</span>
+                                </button>
+                            </div>
+
+                            {activePost === post._id && (
+                                <div className="border-t mt-4 pt-4">
+                                    <div className="p-4">
+                                        <CommentList postId={post._id} comments={post.comments || []} />
+                                    </div>
+                                    <CommentForm postId={post._id} />
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            </main>
+
+            {/* Edit Post Modal */}
+            {editingPost && (
+                <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
+                    <div className="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 w-96">
+                        <form onSubmit={handleUpdatePost}>
+                            <input
+                                type="text"
+                                value={updatedTitle}
+                                onChange={(e) => setUpdatedTitle(e.target.value)}
+                                className="w-full p-3 border border-gray-600 rounded-md focus:outline-none text-gray-800"
+                            />
+                            <textarea
+                                value={updatedContent}
+                                onChange={(e) => setUpdatedContent(e.target.value)}
+                                className="w-full p-3 border border-gray-600 rounded-md focus:outline-none resize-none text-gray-800"
+                            />
+                            <div className="flex justify-between mt-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setEditingPost(null)}
+                                    className="bg-gray-600 text-white px-4 py-2 rounded-md"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white px-4 py-2 rounded-md"
+                                >
+                                    Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             )}
 
-            {/* ✅ Online Users List */}
-            <div className="bg-white p-4 rounded-lg shadow-md border border-gray-300 mb-4">
-                <h2 className="text-lg font-semibold text-gray-700">Online Users</h2>
-                <ul className="mt-2 space-y-1">
-                    {filteredOnlineUsers.length > 0 ? (
-                        filteredOnlineUsers.map(user => (
-                            <li key={user.userId} className="flex items-center space-x-3">
-                                <span className={`w-2 h-2 ${user.userId === userId ? "bg-blue-500" : "bg-green-500"} rounded-full`}></span>
-                                <p className="text-gray-800">
-                                    {user.username} {user.userId === userId && "(You)"}
-                                </p>
-                                {user.userId !== userId && (
-                                    <button
-                                        className="ml-auto bg-blue-500 text-white px-2 py-1 rounded"
-                                        onClick={() => handleStartChat(user)}
-                                    >
-                                        💬 Chat
-                                    </button>
-                                )}
-                            </li>
-                        ))
-                    ) : (
-                        <p className="text-gray-500">No users online</p>
-                    )}
-                </ul>
+            {/* Always Visible Online Users Button */}
+            <div
+                className="fixed right-4 bottom-4 bg-gradient-to-r from-purple-500 to-blue-500 text-white p-3 rounded-full shadow-lg cursor-pointer z-50"
+                onClick={() => setShowOnlineUsers(!showOnlineUsers)}
+            >
+                <Users className="w-6 h-6" />
             </div>
 
-            {/* ✅ Posts List */}
-            {posts.map(post => (
-                <div key={post._id} className="bg-white rounded-lg shadow-md border border-gray-300 mb-6">
-                    <div className="p-4 flex items-center justify-between">
-                        <h3 className="text-md font-semibold">{post.user?.name || storedUser.name ||"Anonymous"}</h3>
-                        {post.user._id === userId && (
-                            <div className="flex space-x-2">
-                                <button
-                                    onClick={() => handleEditPost(post)}
-                                    className="text-blue-500 hover:text-blue-700 text-sm"
-                                >
-                                    ✏️ Edit
-                                </button>
-                                <button
-                                    onClick={() => handleDeletePost(post._id)}
-                                    className="text-red-500 hover:text-red-700 text-sm"
-                                >
-                                    🗑 Delete
-                                </button>
-                            </div>
+            {/* Online Users List */}
+            {showOnlineUsers && (
+                <div className="fixed right-4 bottom-20 bg-gray-900 p-4 rounded-xl shadow-lg border border-gray-700 w-72 z-50">
+                    <h2 className="text-lg font-bold mb-2">Online Users</h2>
+                    <ul>
+                        {onlineUsers.length > 0 ? (
+                            onlineUsers.map((user) => {
+                                const isCurrentUser = user.id === userId;
+                                const unreadCount = notifications[user.id] || 0; // Get unread message count
+
+                                return (
+                                    <li
+                                        key={user._id}
+                                        className={`flex items-center p-2 rounded-lg ${
+                                            isCurrentUser ? "cursor-default" : "cursor-pointer hover:bg-gray-800"
+                                        }`}
+                                        onClick={() => {
+                                            if (!isCurrentUser) {
+                                                setActiveChat(user); // Only set active chat if it's not the current user
+                                            }
+                                        }}
+                                    >
+                                        <img
+                                            src={user.profilePic || "https://via.placeholder.com/40"}
+                                            className="w-10 h-10 rounded-full mr-2 border"
+                                        />
+                                        <span>{isCurrentUser ? "You" : user.name}</span>
+                                        {unreadCount > 0 && ( // Show notification badge
+                                            <span className="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                                                {unreadCount}
+                                            </span>
+                                        )}
+                                    </li>
+                                );
+                            })
+                        ) : (
+                            <p className="text-gray-500">No users online</p>
                         )}
-                    </div>
-
-                    <div className="p-4">
-                        <p className="text-gray-800 font-medium">{post.title}</p>
-                        <p className="text-gray-600 mt-1">{post.content}</p>
-                    </div>
-
-                    <button
-                        className="flex items-center space-x-1 hover:text-blue-500 px-4 py-2"
-                        onClick={() => {
-                            setActivePost(prev => (prev === post._id ? null : post._id));
-                            if (!post.comments) dispatch(fetchComments(post._id));
-                        }}
-                    >
-                        💬 <span>Comment</span>
-                    </button>
-
-                    {activePost === post._id && (
-                        <div className="border-t">
-                            <div className="p-4">
-                                <CommentList postId={post._id} comments={post.comments || []} />
-                            </div>
-                            <CommentForm postId={post._id} />
-                        </div>
-                    )}
-
-                    {/* ✅ Inline Edit Form for the post */}
-                    {editingPost?._id === post._id && (
-                        <div className="bg-white p-4 rounded-lg shadow-md border border-gray-300 mt-4">
-                            <h4 className="text-lg font-semibold">Edit Post</h4>
-                            <form onSubmit={handleUpdatePost}>
-                                <div className="mb-4">
-                                    <label htmlFor="title" className="block text-gray-700">Title</label>
-                                    <input
-                                        type="text"
-                                        id="title"
-                                        value={updatedTitle}
-                                        onChange={(e) => setUpdatedTitle(e.target.value)}
-                                        className="w-full p-2 mt-2 border rounded"
-                                        required
-                                    />
-                                </div>
-
-                                <div className="mb-4">
-                                    <label htmlFor="content" className="block text-gray-700">Content</label>
-                                    <textarea
-                                        id="content"
-                                        value={updatedContent}
-                                        onChange={(e) => setUpdatedContent(e.target.value)}
-                                        className="w-full p-2 mt-2 border rounded"
-                                        required
-                                    />
-                                </div>
-
-                                <button
-                                    type="submit"
-                                    className="bg-blue-500 text-white px-4 py-2 rounded"
-                                >
-                                    Update Post
-                                </button>
-                            </form>
-                        </div>
-                    )}
+                    </ul>
                 </div>
-            ))}
+            )}
 
-            {/* ✅ Show Chat Component if Active */}
+            {/* Chat Section */}
             {activeChat && (
                 <Suspense fallback={<div className="text-center p-4">Loading chat...</div>}>
                     <div className="fixed bottom-4 right-4 w-80 bg-white shadow-lg rounded-lg">

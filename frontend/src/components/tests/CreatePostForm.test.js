@@ -75,6 +75,7 @@ describe("CreatePostForm", () => {
 
     await waitFor(() => {
       expect(mockDispatch).toHaveBeenCalled();
+      // eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
       expect(addPost).toHaveBeenCalledWith({
         userId: "12345",
         title: "New Post",

@@ -166,9 +166,12 @@ const postsSlice = createSlice({
             .addCase(updatePost.fulfilled, (state, action) => {
                 const updatedPost = action.payload;
                 state.posts = state.posts.map((post) =>
-                    post._id === updatedPost._id ? { ...post, ...updatedPost } : post
+                    post._id === updatedPost._id 
+                        ? { ...post, ...updatedPost, user: post.user }  // Preserve user data
+                        : post
                 );
             });
+            
     },
 });
 

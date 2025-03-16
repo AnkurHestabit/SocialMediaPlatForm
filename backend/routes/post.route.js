@@ -6,7 +6,7 @@ const {verifyToken,authorizeRole} = require('../middlewear/authMiddlewear')
 
 router.post('/addPost',verifyToken,postControllers.createPost)
 router.patch('/updatePost/:postId',verifyToken,postControllers.updatePosts)
-router.get('/getPost', postControllers.getPosts)
+router.get('/getPost',verifyToken,postControllers.getPosts)
 router.delete('/deletePost/:postId',verifyToken,postControllers.deletePosts)
 
 module.exports = router

@@ -49,7 +49,7 @@ async updatePosts(req, res) {
     try {
         const { postId} = req.params;
        
-        const post = await Post.findByIdAndUpdate(postId, { $set: req.body }, { new: true });
+        const post = await Post.findByIdAndUpdate(postId, { $set: req.body }, { new: true }) .populate("user", "name "); 
 
         if (!post) {
             return res.apiResponse({ status: 404, message: "Post not found" });

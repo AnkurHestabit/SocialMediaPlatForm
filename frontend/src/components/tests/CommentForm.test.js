@@ -78,6 +78,7 @@ describe("CommentForm", () => {
     // ✅ Wait for the dispatch to be called
     await waitFor(() => {
       expect(mockDispatch).toHaveBeenCalled();
+      // eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
       expect(addComment).toHaveBeenCalledWith({
         postId: "post123",
         text: "Test comment",
