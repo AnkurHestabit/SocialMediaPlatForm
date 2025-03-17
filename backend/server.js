@@ -8,7 +8,7 @@ const port = process.env.PORT || 5000;
 
 const io = new Server(server, {
     cors: {
-        origin: "https://frontend-f8d1c23yd-ankurs-projects-33779db2.vercel.app", // Use your frontend URL
+        origin: "https://frontend-oxuhl4425-ankurs-projects-33779db2.vercel.app", // Use your frontend URL
         methods: ["GET", "POST"]
     }
 });
