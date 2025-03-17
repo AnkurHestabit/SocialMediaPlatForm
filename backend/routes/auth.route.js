@@ -48,7 +48,7 @@ router.get("/facebook/callback",
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "None",
-            domain: ".frontend-oxuhl4425-ankurs-projects-33779db2.vercel.app",
+            domain: ".socialmediaplatform-dmhm.onrender.com",
             path: "/",
             maxAge: 15 * 60 * 1000, // 15 minutes
         });
@@ -57,7 +57,7 @@ router.get("/facebook/callback",
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "None",
-            domain: ".frontend-oxuhl4425-ankurs-projects-33779db2.vercel.app",
+            domain: ".socialmediaplatform-dmhm.onrender.com",
             path: "/",
             maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         });
