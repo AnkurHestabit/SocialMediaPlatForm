@@ -61,7 +61,7 @@ router.get("/facebook/callback",
             maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         });
 
-        res.redirect(`https://frontend-oxuhl4425-ankurs-projects-33779db2.vercel.app/auth-success?token=${token}`);
+        res.redirect(`https://frontend-oxuhl4425-ankurs-projects-33779db2.vercel.app/auth-success?token=${accessToken}`);
         
     }
 );
