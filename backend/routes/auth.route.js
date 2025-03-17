@@ -23,9 +23,6 @@ router.get("/facebook", passport.authenticate("facebook", { scope: ["email"] }))
 router.get("/facebook/callback", 
     passport.authenticate("facebook", { session: false }), 
     async(req, res) => {
-      
-      
-
 
         // ✅ Generate Access Token (short-lived, e.g., 15 minutes)
                     const accessToken = jwt.sign(
