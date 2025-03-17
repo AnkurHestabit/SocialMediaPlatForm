@@ -27,7 +27,6 @@ export const fetchUser = createAsyncThunk("auth/fetchUser", async (_, { rejectWi
 });
 
 
-
 // ✅ Login Thunk
 export const login = createAsyncThunk("auth/login", async (credentials, { rejectWithValue }) => {
     try {

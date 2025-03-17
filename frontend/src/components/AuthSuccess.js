@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { fetchUser } from "../redux/slices/authSlice"; // ✅ Import fetchUser
+import { setUser } from "../redux/slices/authSlice";
 import { useNavigate } from "react-router-dom";
 
 const AuthSuccess = () => {
@@ -8,18 +8,34 @@ const AuthSuccess = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                await dispatch(fetchUser()).unwrap(); // ✅ Get user from cookies
-                navigate("/"); // ✅ Redirect to home after successful login
-            } catch (error) {
-                console.error("Error fetching user:", error);
-                navigate("/login");
-            }
-        };
-
-        fetchUserData();
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get("token");
+    
+        if (token) {
+            
+            fetchUser(token);
+        } else {
+            navigate("/login"); // Redirect to login if no token
+        }
     }, [dispatch, navigate]);
+    
+    const fetchUser = async (token) => {
+        try {
+            const res = await fetch("https://socialmediaplatform-dmhm.onrender.com/api/v1/auth/me", {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const data = await res.json();
+            if (res.ok) {
+       
+                dispatch(setUser(data)); // Update Redux state
+                navigate("/"); // Redirect to home
+            }
+        } catch (error) {
+            console.error("Error fetching user:", error);
+            navigate("/login");
+        }
+    };
+    
 
     return <p>Logging in...</p>;
 };
