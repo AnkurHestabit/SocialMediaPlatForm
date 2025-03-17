@@ -60,7 +60,7 @@ passport.use(
         {
             clientID: process.env.FACEBOOK_APP_ID,
             clientSecret: process.env.FACEBOOK_APP_SECRET,
-            callbackURL: "/api/v1/auth/facebook/callback",
+            callbackURL: "https://socialmediaplatform-dmhm.onrender.com/api/v1/auth/facebook/callback",
             profileFields: ["id", "displayName", "emails"],
         },
         async (accessToken, refreshToken, profile, done) => {
