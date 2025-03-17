@@ -63,7 +63,7 @@ router.get("/facebook/callback",
         });
 
         // ✅ Redirect to frontend with token in URL
-        res.redirect(`https://frontend-oxuhl4425-ankurs-projects-33779db2.vercel.app/auth-success?token=${accessToken}`);
+        res.redirect(`https://frontend-f8d1c23yd-ankurs-projects-33779db2.vercel.app/auth-success?token=${accessToken}`);
     }
 );
 
