@@ -53,7 +53,7 @@ const authorizeRole = (roles) => {
 
  const isAuthenticated = async (req, res, next) => {
     try {
-        const token = req.cookies?.accessToken; // ✅ Extract token from cookie
+        const token = req.cookies?.accessToken || req.cookies?._vercel_jwt; // ✅ Extract token from cookie
         if (!token) {
             return res.status(401).json({ message: "Unauthorized. No token found." });
         }

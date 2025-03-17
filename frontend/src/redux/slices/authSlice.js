@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { loginUser, registerUser, getUserProfile, logoutUser } from "../../services/api";
+import { loginUser, registerUser, getUserProfile, logoutUser,getUserProfileForFaceBook } from "../../services/api";
 import store from '../store'
 
 // ✅ Signup Thunk (New User Registration)
@@ -25,6 +25,8 @@ export const fetchUser = createAsyncThunk("auth/fetchUser", async (_, { rejectWi
         return rejectWithValue(null); // No user found, return null
     }
 });
+
+
 
 // ✅ Login Thunk
 export const login = createAsyncThunk("auth/login", async (credentials, { rejectWithValue }) => {
@@ -95,6 +97,7 @@ const authSlice = createSlice({
                 state.user = null;
                 state.error = action.payload;
             })
+          
 
             // Signup
             .addCase(signup.pending, (state) => {

@@ -76,6 +76,7 @@ export const loginUser = async (credentials) => {
     return await API.post("api/v1/user/login", credentials, { withCredentials: true });
 };
 
+
 export const registerUser = (userData) => API.post("api/v1/user/register", userData);
 export const getUserProfile = () => API.get(`/api/v1/user/getUserProfile`);
 export const logoutUser = () => API.post(`/api/v1/user/logout`);
